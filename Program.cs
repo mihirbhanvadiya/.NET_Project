@@ -20,6 +20,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
+builder.Services.AddScoped<JobSequenceApp.Services.IJobSequencingService, JobSequenceApp.Services.JobSequencingService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

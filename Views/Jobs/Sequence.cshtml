@@ -1,0 +1,106 @@
+@model JobSequenceApp.Models.ViewModels.JobSequenceResultViewModel
+@{
+    ViewData["Title"] = "Job Sequence Result";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary"><i class="bi bi-bar-chart-steps"></i> Optimal Job Sequence</h2>
+    
+    <div class="alert alert-info">
+        The algorithm sorted <strong>@Model.AvailableJobs.Count</strong> available jobs by profit and assigned them to time slots to maximize total profit.
+    </div>
+
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Selected Job Sequence</h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover table-striped mb-0 text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Time Slot</th>
+                                <th>Job ID</th>
+                                <th>Deadline</th>
+                                <th>Profit (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.ScheduledJobs != null && Model.ScheduledJobs.Any(j => j != null))
+                            {
+                                for (int i = 0; i < Model.ScheduledJobs.Length; i++)
+                                {
+                                    var job = Model.ScheduledJobs[i];
+                                    if (job != null)
+                                    {
+                                        <tr>
+                                            <td><span class="badge bg-secondary fs-6">Slot @(i + 1)</span></td>
+                                            <td class="fw-bold">@job.Name</td>
+                                            <td>@job.Deadline</td>
+                                            <td class="text-success fw-bold">₹@job.Profit</td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-muted py-4">No jobs could be scheduled.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-end bg-light">
+                    <h4 class="mb-0">Total Profit: <span class="text-success fw-bold">₹@Model.TotalProfit</span></h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="bi bi-list-task"></i> All Available Jobs</h5>
+                </div>
+                <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-sm table-bordered mb-0 text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Job ID</th>
+                                <th>Deadline</th>
+                                <th>Profit</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var job in Model.AvailableJobs.OrderByDescending(j => j.Profit))
+                            {
+                                bool isScheduled = Model.ScheduledJobs.Contains(job);
+                                <tr>
+                                    <td>@job.Name</td>
+                                    <td>@job.Deadline</td>
+                                    <td>₹@job.Profit</td>
+                                    <td>
+                                        @if (isScheduled)
+                                        {
+                                            <span class="badge bg-success">Selected</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Rejected</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <a asp-action="Index" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Back to Job List</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -10,5 +10,7 @@ namespace JobSequenceApp.Data
             : base(options)
         {
         }
+
+        public DbSet<Job> Jobs { get; set; }
     }
 }
