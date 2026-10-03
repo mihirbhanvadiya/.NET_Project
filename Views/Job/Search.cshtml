@@ -1,0 +1,96 @@
+@model OnlineJobAssignment.ViewModels.JobSearchViewModel
+
+@{
+    ViewData["Title"] = "Search Jobs";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-md-4 col-lg-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Search" method="get">
+                        <div class="mb-3">
+                            <label asp-for="Keyword" class="form-label"></label>
+                            <input asp-for="Keyword" class="form-control" placeholder="Search title, desc..." />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Category" class="form-label"></label>
+                            <input asp-for="Category" class="form-control" placeholder="e.g. IT, Design" />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Location" class="form-label"></label>
+                            <input asp-for="Location" class="form-control" placeholder="City or Remote" />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Skills" class="form-label"></label>
+                            <input asp-for="Skills" class="form-control" placeholder="e.g. C#, SQL" />
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label asp-for="MinimumPayment" class="form-label">Min Pay</label>
+                                <input asp-for="MinimumPayment" type="number" step="0.01" class="form-control" />
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label asp-for="MaximumPayment" class="form-label">Max Pay</label>
+                                <input asp-for="MaximumPayment" type="number" step="0.01" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Deadline" class="form-label"></label>
+                            <input asp-for="Deadline" type="date" class="form-control" />
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            <a asp-action="Search" class="btn btn-outline-secondary">Clear</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Area -->
+        <div class="col-md-8 col-lg-9">
+            @if (!Model.Results.Any())
+            {
+                <div class="alert alert-info shadow-sm">
+                    <i class="bi bi-info-circle me-2"></i> No jobs found matching your criteria. Try adjusting your filters.
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-md-2 g-4">
+                    @foreach (var job in Model.Results)
+                    {
+                        <div class="col">
+                            <div class="card h-100 shadow-sm border-0 job-card hover-shadow transition">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title text-primary fw-bold mb-0 text-truncate" style="max-width: 80%;">@job.Title</h5>
+                                        <span class="badge bg-success fs-6">@job.PaymentAmount.ToString("C")</span>
+                                    </div>
+                                    <h6 class="card-subtitle mb-3 text-muted">
+                                        <small>@job.Category • @(string.IsNullOrEmpty(job.Location) ? "Remote" : job.Location)</small>
+                                    </h6>
+                                    <p class="card-text text-truncate" style="max-height: 4.5em; overflow: hidden;">@job.Description</p>
+                                </div>
+                                <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
+                                    <small class="text-danger fw-semibold">Closes: @job.Deadline.ToShortDateString()</small>
+                                    <a asp-action="Details" asp-route-id="@job.Id" class="btn btn-sm btn-outline-primary px-3">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,112 @@
+@using Microsoft.AspNetCore.Identity
+@using OnlineJobAssignment.Models
+@using OnlineJobAssignment.Services
+@inject UserManager<ApplicationUser> UserManager
+@inject INotificationService NotificationService
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - OnlineJobAssignment</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/OnlineJobAssignment.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">OnlineJobAssignment</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fw-semibold" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            if (User.IsInRole("JobProvider"))
+                            {
+                                <li class="nav-item"><a class="nav-link text-dark fw-semibold" asp-controller="Job" asp-action="Index">Jobs</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark fw-semibold" asp-controller="Dashboard" asp-action="Provider">Dashboard</a></li>
+                            }
+                            else if (User.IsInRole("JobSeeker"))
+                            {
+                                <li class="nav-item"><a class="nav-link text-dark fw-semibold" asp-controller="Job" asp-action="Search">Jobs</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark fw-semibold" asp-controller="Dashboard" asp-action="Seeker">Dashboard</a></li>
+                            }
+                            <li class="nav-item"><a class="nav-link text-dark fw-semibold" asp-controller="Profile" asp-action="Index">Profile</a></li>
+                            
+                            var user = await UserManager.GetUserAsync(User);
+                            int unreadCount = user != null ? await NotificationService.GetUnreadCountAsync(user.Id) : 0;
+                            
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-semibold" asp-controller="Notification" asp-action="Index">
+                                    Notifications
+                                    @if (unreadCount > 0)
+                                    {
+                                        <span class="badge bg-danger rounded-pill">@unreadCount</span>
+                                    }
+                                </a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link text-dark fw-semibold" asp-controller="Message" asp-action="Index">Messages</a></li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Hello, @User.Identity?.Name!
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Payment" asp-action="Index">Payments</a></li>
+                                    @if (User.IsInRole("JobSeeker"))
+                                    {
+                                        <li><a class="dropdown-item" asp-controller="Application" asp-action="Index">My Applications</a></li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
+                                            <button type="submit" class="dropdown-item text-danger">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-semibold" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary btn-sm ms-2 mt-1" asp-controller="Account" asp-action="Register">Register</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 - OnlineJobAssignment - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

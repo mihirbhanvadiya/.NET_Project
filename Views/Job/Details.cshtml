@@ -1,0 +1,121 @@
+@model OnlineJobAssignment.Models.Job
+@using OnlineJobAssignment.Models.Enums
+
+@{
+    ViewData["Title"] = "Job Details";
+}
+
+<h2>Job Details</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Job Details: @Model.Title</h4>
+                    <span class="badge bg-light text-dark fs-6">@Model.Status</span>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <h5 class="text-primary fw-bold">@Model.Title</h5>
+                            <p class="text-muted mb-2">@Model.Category • @(string.IsNullOrEmpty(Model.Location) ? "Remote" : Model.Location)</p>
+                            <p class="fs-5">@Model.Description</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <h3 class="text-success fw-bold">@Model.PaymentAmount.ToString("C")</h3>
+                            <p class="text-danger fw-semibold mb-1">Closes: @Model.Deadline.ToShortDateString()</p>
+                            <small class="text-muted">Posted: @Model.CreatedAt.ToLocalTime().ToString("g")</small>
+                        </div>
+                    </div>
+                    
+                    <hr />
+                    
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Required Skills:</h6>
+                        <p>@(string.IsNullOrEmpty(Model.RequiredSkills) ? "None specified" : Model.RequiredSkills)</p>
+                    </div>
+                </div>
+                <div class="card-footer bg-light p-3">
+                    <div class="d-flex gap-2">
+                        @if (User.IsInRole("JobProvider"))
+                        {
+                            if (Model.Status == JobStatus.Open)
+                            {
+                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+                            }
+                            <a asp-controller="ProviderApplication" asp-action="Index" asp-route-jobId="@Model.Id" class="btn btn-primary">View Applications</a>
+                            
+                            if (Model.Status == JobStatus.Assigned || Model.Status == JobStatus.InProgress || Model.Status == JobStatus.Completed)
+                            {
+                                <a asp-controller="Message" asp-action="Index" asp-route-jobId="@Model.Id" class="btn btn-info text-white">Messages</a>
+                            }
+
+                            if (Model.Status == JobStatus.Completed)
+                            {
+                                <a asp-controller="Review" asp-action="Create" asp-route-jobId="@Model.Id" class="btn btn-primary">Leave Review</a>
+                            }
+
+                            if (Model.Status == JobStatus.InProgress)
+                            {
+                                <form asp-action="CompleteJob" asp-route-id="@Model.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-success">Mark Completed</button>
+                                </form>
+                            }
+                            
+                            if (Model.Status != JobStatus.Completed && Model.Status != JobStatus.Cancelled)
+                            {
+                                <form asp-action="CancelJob" asp-route-id="@Model.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this job?');">Cancel Job</button>
+                                </form>
+                            }
+
+                            <a asp-action="Index" class="btn btn-secondary ms-auto">Back to My Jobs</a>
+                        }
+                        else if (User.IsInRole("JobSeeker"))
+                        {
+                            @if (Model.Status == JobStatus.Open)
+                            {
+                                <a asp-controller="Application" asp-action="Apply" asp-route-jobId="@Model.Id" class="btn btn-primary">Apply Now</a>
+                            }
+                            
+                            @if (ViewData["IsAssignedSeeker"] is true)
+                            {
+                                if (Model.Status == JobStatus.Assigned || Model.Status == JobStatus.InProgress || Model.Status == JobStatus.Completed)
+                                {
+                                    <a asp-controller="Message" asp-action="Index" asp-route-jobId="@Model.Id" class="btn btn-info text-white">Messages</a>
+                                }
+                                
+                                if (Model.Status == JobStatus.Assigned)
+                                {
+                                    <form asp-action="StartJob" asp-route-id="@Model.Id" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-success">Start Job</button>
+                                    </form>
+                                }
+                                else if (Model.Status == JobStatus.InProgress)
+                                {
+                                    <form asp-action="CompleteJob" asp-route-id="@Model.Id" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-success">Mark Completed</button>
+                                    </form>
+                                }
+                                else if (Model.Status == JobStatus.Completed)
+                                {
+                                    <a asp-controller="Review" asp-action="Create" asp-route-jobId="@Model.Id" class="btn btn-primary">Leave Review</a>
+                                }
+                            }
+                            <a asp-action="Search" class="btn btn-secondary ms-auto">Back to Search</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

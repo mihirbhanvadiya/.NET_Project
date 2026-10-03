@@ -1,0 +1,43 @@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container mt-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6 mb-4">
+            <h1 class="display-4 fw-bold text-primary">Welcome to OnlineJobAssignment</h1>
+            <p class="lead mt-3">Connecting talented professionals with great opportunities. Whether you're looking to hire top talent or find your next dream job, you've come to the right place.</p>
+            <div class="mt-4 gap-3 d-flex">
+                @if (!User.Identity?.IsAuthenticated ?? true)
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg px-4">Get Started</a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary btn-lg px-4">Login</a>
+                }
+                else
+                {
+                    if (User.IsInRole("JobProvider"))
+                    {
+                        <a asp-controller="Dashboard" asp-action="Provider" class="btn btn-primary btn-lg px-4">Go to Dashboard</a>
+                        <a asp-controller="Job" asp-action="Create" class="btn btn-outline-secondary btn-lg px-4">Post a Job</a>
+                    }
+                    else if (User.IsInRole("JobSeeker"))
+                    {
+                        <a asp-controller="Dashboard" asp-action="Seeker" class="btn btn-primary btn-lg px-4">Go to Dashboard</a>
+                        <a asp-controller="Job" asp-action="Search" class="btn btn-outline-secondary btn-lg px-4">Find Jobs</a>
+                    }
+                }
+            </div>
+        </div>
+        <div class="col-lg-6 text-center">
+            <div class="p-5 bg-light rounded-3 border shadow-sm">
+                <h3 class="fw-bold">Why choose us?</h3>
+                <ul class="text-start mt-4 fs-5 list-unstyled">
+                    <li class="mb-2">✅ Verified Professionals</li>
+                    <li class="mb-2">✅ Secure Job Assignments</li>
+                    <li class="mb-2">✅ Seamless Messaging</li>
+                    <li class="mb-2">✅ Transparent Reviews</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

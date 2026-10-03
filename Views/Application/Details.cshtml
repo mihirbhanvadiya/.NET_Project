@@ -1,0 +1,58 @@
+@model OnlineJobAssignment.Models.JobApplication
+@using OnlineJobAssignment.Models.Enums
+
+@{
+    ViewData["Title"] = "Application Details";
+}
+
+<h2>Application Details</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Job Title</dt>
+        <dd class="col-sm-9"><a asp-controller="Job" asp-action="Details" asp-route-id="@Model.JobId">@Model.Job?.Title</a></dd>
+
+        <dt class="col-sm-3">Application Date</dt>
+        <dd class="col-sm-9">@Model.ApplicationDate.ToLocalTime()</dd>
+
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">
+            @{
+                var badgeClass = Model.Status switch
+                {
+                    ApplicationStatus.Pending => "bg-warning text-dark",
+                    ApplicationStatus.Accepted => "bg-success",
+                    ApplicationStatus.Rejected => "bg-danger",
+                    ApplicationStatus.Withdrawn => "bg-secondary",
+                    _ => "bg-primary"
+                };
+            }
+            <span class="badge @badgeClass">@Model.Status</span>
+        </dd>
+
+        <dt class="col-sm-3">Your Message</dt>
+        <dd class="col-sm-9 border p-2 bg-light">
+            @(string.IsNullOrWhiteSpace(Model.Message) ? "No message provided." : Model.Message)
+        </dd>
+    </dl>
+</div>
+
+<div class="d-flex gap-2 mt-3">
+    @if (Model.Status == ApplicationStatus.Pending)
+    {
+        <form asp-action="Withdraw" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Are you sure you want to withdraw this application?');">
+            <button type="submit" class="btn btn-danger">Withdraw Application</button>
+        </form>
+    }
+    
+    <a asp-action="Index" class="btn btn-secondary">Back to My Applications</a>
+</div>

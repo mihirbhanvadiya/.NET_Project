@@ -1,0 +1,31 @@
+@model OnlineJobAssignment.Models.Job
+
+@{
+    ViewData["Title"] = "Delete Job";
+}
+
+<h2>Delete Job</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Title)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Title)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Category)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Category)</dd>
+        
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.PaymentAmount)</dt>
+        <dd class="col-sm-9">@Model.PaymentAmount.ToString("C")</dd>
+        
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Status)</dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

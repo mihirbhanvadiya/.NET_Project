@@ -1,0 +1,61 @@
+@model IEnumerable<OnlineJobAssignment.Models.Payment>
+@using OnlineJobAssignment.Models.Enums
+
+@{
+    ViewData["Title"] = "Payments";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+    <hr />
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var payment in Model)
+                    {
+                        <tr>
+                            <td>@payment.Job?.Title</td>
+                            <td>@payment.Amount.ToString("C")</td>
+                            <td>
+                                @if (payment.Status == PaymentStatus.Paid)
+                                {
+                                    <span class="badge bg-success">Paid</span>
+                                }
+                                else if (payment.Status == PaymentStatus.Pending)
+                                {
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">@payment.Status</span>
+                                }
+                            </td>
+                            <td>@payment.CreatedAt.ToLocalTime().ToString("g")</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@payment.Id" class="btn btn-sm btn-info">Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            No payment records found.
+        </div>
+    }
+</div>

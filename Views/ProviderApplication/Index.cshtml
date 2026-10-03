@@ -1,0 +1,40 @@
+@model IEnumerable<OnlineJobAssignment.Models.JobApplication>
+
+@{
+    ViewData["Title"] = "Applications for " + ViewData["JobTitle"];
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-controller="Job" asp-action="Details" asp-route-id="@ViewData["JobId"]">Back to Job</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Applicant</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @(item.JobSeeker?.FullName ?? "Unknown")
+            </td>
+            <td>
+                @item.ApplicationDate.ToLocalTime().ToString("g")
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Review Application</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,99 @@
+@model OnlineJobAssignment.ViewModels.ProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (TempData["StatusMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible" role="alert">
+        @TempData["StatusMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <h4>Update Profile Information</h4>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" disabled />
+                <span class="text-muted small">Email cannot be changed here.</span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="FullName" class="control-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="PhoneNumber" class="control-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Address" class="control-label"></label>
+                <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Skills" class="control-label"></label>
+                <input asp-for="Skills" class="form-control" placeholder="e.g. C#, ASP.NET Core, SQL" />
+                <span asp-validation-for="Skills" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Profile</button>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <h4>My Reviews</h4>
+        <hr />
+        <div class="mb-3">
+            <strong>Average Rating:</strong> 
+            @if (Model.Reviews != null && Model.Reviews.Any())
+            {
+                <span class="badge bg-info text-dark">@Model.AverageRating.ToString("0.0") / 5</span>
+            }
+            else
+            {
+                <span class="text-muted">No reviews yet.</span>
+            }
+        </div>
+
+        @if (Model.Reviews != null && Model.Reviews.Any())
+        {
+            <div class="list-group">
+                @foreach (var review in Model.Reviews)
+                {
+                    <div class="list-group-item list-group-item-action flex-column align-items-start mb-2 shadow-sm rounded">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">
+                                Rating: <span class="badge bg-warning text-dark">@review.Rating</span>
+                            </h6>
+                            <small class="text-muted">@review.CreatedAt.ToLocalTime().ToString("g")</small>
+                        </div>
+                        <p class="mb-1 fst-italic">"@review.Comment"</p>
+                        <small>From: @review.Reviewer?.FullName for Job: @review.Job?.Title</small>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-light">You have not received any reviews.</div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,81 @@
+@model OnlineJobAssignment.Models.Payment
+@using Microsoft.AspNetCore.Identity
+@using OnlineJobAssignment.Models.Enums
+@inject UserManager<OnlineJobAssignment.Models.ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Payment Details";
+    var currentUser = await UserManager.GetUserAsync(User);
+    bool isProvider = currentUser != null && currentUser.Id == Model.JobProviderId;
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+    <hr />
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info">
+            @TempData["Message"]
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Payment #@Model.Id</h5>
+            @if (Model.Status == PaymentStatus.Paid)
+            {
+                <span class="badge bg-success fs-6">Paid</span>
+            }
+            else if (Model.Status == PaymentStatus.Pending)
+            {
+                <span class="badge bg-warning text-dark fs-6">Pending</span>
+            }
+            else
+            {
+                <span class="badge bg-danger fs-6">@Model.Status</span>
+            }
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Job Title</dt>
+                <dd class="col-sm-9">@Model.Job?.Title</dd>
+
+                <dt class="col-sm-3">Job Provider</dt>
+                <dd class="col-sm-9">@Model.JobProvider?.FullName (@Model.JobProvider?.Email)</dd>
+
+                <dt class="col-sm-3">Job Seeker</dt>
+                <dd class="col-sm-9">@Model.JobSeeker?.FullName (@Model.JobSeeker?.Email)</dd>
+
+                <dt class="col-sm-3">Amount</dt>
+                <dd class="col-sm-9 fw-bold">@Model.Amount.ToString("C")</dd>
+
+                <dt class="col-sm-3">Created At</dt>
+                <dd class="col-sm-9">@Model.CreatedAt.ToLocalTime().ToString("g")</dd>
+
+                @if (Model.PaidAt.HasValue)
+                {
+                    <dt class="col-sm-3">Paid At</dt>
+                    <dd class="col-sm-9 text-success">@Model.PaidAt.Value.ToLocalTime().ToString("g")</dd>
+                }
+            </dl>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            
+            @if (isProvider && Model.Status == PaymentStatus.Pending)
+            {
+                <form asp-action="Pay" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-success">Simulate Payment</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

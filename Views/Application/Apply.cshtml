@@ -1,0 +1,33 @@
+@model OnlineJobAssignment.ViewModels.ApplyViewModel
+
+@{
+    ViewData["Title"] = "Apply for Job";
+}
+
+<h2>Apply for @Model.JobTitle</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Apply">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="JobId" />
+            <input type="hidden" asp-for="JobTitle" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Message" class="control-label"></label>
+                <textarea asp-for="Message" class="form-control" rows="5" placeholder="Why are you a good fit for this job?"></textarea>
+                <span asp-validation-for="Message" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <button type="submit" class="btn btn-primary">Submit Application</button>
+                <a asp-controller="Job" asp-action="Details" asp-route-id="@Model.JobId" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

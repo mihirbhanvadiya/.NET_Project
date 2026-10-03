@@ -1,0 +1,150 @@
+@model OnlineJobAssignment.ViewModels.SeekerDashboardViewModel
+@{
+    ViewData["Title"] = "Seeker Dashboard";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>@ViewData["Title"]</h2>
+        <a asp-controller="Job" asp-action="Search" class="btn btn-primary">Find New Jobs</a>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="row text-center mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Available Jobs</h5>
+                    <p class="card-text fs-2 fw-bold">@Model.AvailableJobs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Applications</h5>
+                    <p class="card-text fs-2 fw-bold">@Model.MyApplications</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Pending</h5>
+                    <p class="card-text fs-2 fw-bold text-dark">@Model.PendingApplications</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Active / Done</h5>
+                    <p class="card-text fs-2 fw-bold">@Model.AssignedJobs / @Model.CompletedJobs</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Assigned Jobs -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Accepted / Assigned Jobs</h5>
+                    <span class="badge bg-success">@Model.AcceptedApplications Accepted</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        @if (Model.RecentAssignedJobs.Any())
+                        {
+                            foreach (var job in Model.RecentAssignedJobs)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>@job.Title</strong>
+                                            <br />
+                                            <small class="text-muted">Status: @job.Status</small>
+                                        </div>
+                                        <a asp-controller="Job" asp-action="Details" asp-route-id="@job.Id" class="btn btn-sm btn-outline-primary">Workspace</a>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="p-3 text-muted">You have no accepted or assigned jobs recently.</div>
+                        }
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <a asp-controller="Application" asp-action="Index" class="btn btn-sm btn-secondary">View All Applications</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Notifications -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Recent Notifications</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        @if (Model.RecentNotifications.Any())
+                        {
+                            foreach (var notification in Model.RecentNotifications)
+                            {
+                                <div class="list-group-item @(!notification.IsRead ? "bg-light" : "")">
+                                    <h6 class="mb-1">@notification.Title</h6>
+                                    <p class="mb-1 small">@notification.Message</p>
+                                    <small class="text-muted">@notification.CreatedAt.ToLocalTime().ToString("g")</small>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="p-3 text-muted">You have no new notifications.</div>
+                        }
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <a asp-controller="Notification" asp-action="Index" class="btn btn-sm btn-secondary">View All</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Messages -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Recent Messages</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        @if (Model.RecentMessages.Any())
+                        {
+                            foreach (var msg in Model.RecentMessages)
+                            {
+                                <div class="list-group-item @(!msg.IsRead ? "bg-light fw-bold" : "")">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <small class="text-primary">@msg.Sender?.FullName</small>
+                                            <p class="mb-1">@(msg.Content.Length > 50 ? msg.Content.Substring(0, 50) + "..." : msg.Content)</p>
+                                            <small class="text-muted">@msg.SentAt.ToLocalTime().ToString("g")</small>
+                                        </div>
+                                        <a asp-controller="Message" asp-action="Index" asp-route-jobId="@msg.JobId" class="btn btn-sm btn-outline-info">Reply</a>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="p-3 text-muted">No recent messages.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

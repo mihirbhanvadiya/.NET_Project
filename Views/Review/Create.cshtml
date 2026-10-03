@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Write a Review";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Review @ViewBag.RevieweeName</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Job: <strong>@ViewBag.JobTitle</strong></p>
+                    
+                    <form asp-action="Create" method="post">
+                        <input type="hidden" name="jobId" value="@ViewBag.JobId" />
+                        
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">Rating (1 to 5)</label>
+                            <select id="rating" name="rating" class="form-select" required>
+                                <option value="" disabled selected>Select a rating...</option>
+                                <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Good</option>
+                                <option value="3">3 - Average</option>
+                                <option value="2">2 - Poor</option>
+                                <option value="1">1 - Terrible</option>
+                            </select>
+                            <span class="text-danger" data-valmsg-for="rating" data-valmsg-replace="true"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Comment (Optional)</label>
+                            <textarea id="comment" name="comment" class="form-control" rows="4" maxlength="1000" placeholder="Share your experience..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                            <a asp-controller="Job" asp-action="Details" asp-route-id="@ViewBag.JobId" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

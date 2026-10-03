@@ -1,0 +1,75 @@
+@model OnlineJobAssignment.Models.JobApplication
+
+@{
+    ViewData["Title"] = "Application Details";
+}
+
+<h1>Application Details</h1>
+
+<div>
+    <h4>Application for @(Model.Job?.Title ?? "Job")</h4>
+    <hr />
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Applicant
+        </dt>
+        <dd class = "col-sm-10">
+            @(Model.JobSeeker?.FullName ?? "Unknown")
+        </dd>
+        <dt class = "col-sm-2">
+            Email
+        </dt>
+        <dd class = "col-sm-10">
+            @(Model.JobSeeker?.Email ?? "Unknown")
+        </dd>
+        <dt class = "col-sm-2">
+            Application Date
+        </dt>
+        <dd class = "col-sm-10">
+            @Model.ApplicationDate.ToLocalTime().ToString("g")
+        </dd>
+        <dt class = "col-sm-2">
+            Status
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+        <dt class = "col-sm-2">
+            Message
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Message)
+        </dd>
+    </dl>
+</div>
+
+@if (Model.Status == OnlineJobAssignment.Models.Enums.ApplicationStatus.Pending && Model.Job?.Status == OnlineJobAssignment.Models.Enums.JobStatus.Open)
+{
+    <div class="mt-3">
+        <form asp-action="Accept" asp-route-id="@Model.Id" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-success">Accept Application</button>
+        </form>
+        
+        <form asp-action="Reject" asp-route-id="@Model.Id" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger">Reject Application</button>
+        </form>
+    </div>
+}
+
+<div class="mt-3">
+    <a asp-action="Index" asp-route-jobId="@Model.JobId">Back to Applications</a>
+</div>
